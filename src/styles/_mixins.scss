@@ -1,0 +1,9 @@
+// src/styles/_mixins.scss
+
+@mixin rounded($radius: 8px) {
+  border-radius: $radius;
+}
+
+@mixin transition($property: all, $time: 0.2s, $type: ease-in-out) {
+  transition: $property $time $type;
+}

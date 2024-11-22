@@ -1,0 +1,12 @@
+// src/styles/components/Board.scss
+
+@import '../_variables';
+
+.board {
+  width: 100%;
+  max-width: 320px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}

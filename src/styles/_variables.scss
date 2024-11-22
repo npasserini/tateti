@@ -1,13 +1,12 @@
 // src/styles/_variables.scss
 
 // Cambiar el color primario
-$primary: #007bff;
-$secondary: #6c757d;
-$danger: #dc3545;
+$primary: #4caf50; // Verde moderno
+$secondary: #9e9e9e; // Gris claro
+$danger: #f44336; // Rojo vibrante
 
 // Cambiar el espaciado base
 $spacer: 1.5rem;
 
-// Cambiar la tipografía predeterminada
-$font-family-sans-serif: 'Arial', sans-serif;
-
+$bg-light: #f9f9f9;
+$font-family-sans-serif: 'Roboto', sans-serif;

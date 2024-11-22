@@ -5,3 +5,9 @@
 
 // Importar Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+@import './_mixins';
+
+@import './components/Square';
+@import './components/Board';
+@import './components/Game';
