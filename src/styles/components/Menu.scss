@@ -1,0 +1,33 @@
+@import '../_variables';
+
+.hamburger {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $primary;
+  top: 10px;
+  left: 10px;
+}
+
+.menu {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  background: #ffffff;
+  border: 1px solid $secondary;
+  border-radius: 5px;
+  list-style: none;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  li {
+    padding: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: $primary;
+      color: #ffffff;
+    }
+  }
+}

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Board from './Board';
+import Menu from './Menu';
+
 import '../styles/components/Game.scss';
 
 const calculateWinner = (squares: (string | null)[]) => {
@@ -25,20 +27,10 @@ const Game: React.FC = () => {
   const [squares, setSquares] = useState<(string | null)[]>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
+  const [level, setLevel] = useState<string>('Fácil'); // Nivel inicial
 
   const { winner, line } = calculateWinner(squares);
 
-  const handleComputerMove = (squares: (string | null)[]) => {
-    const emptyIndices = squares
-      .map((sq, idx) => (sq === null ? idx : null))
-      .filter((idx) => idx !== null) as number[];
-  
-    if (emptyIndices.length === 0) return;
-  
-    const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-    squares[randomIndex] = 'O'; // La computadora juega como 'O'
-  };
-  
   const handleClick = (index: number) => {
     if (squares[index] || calculateWinner(squares).winner) return;
   
@@ -76,7 +68,10 @@ const Game: React.FC = () => {
 
   return (
     <div className={`game container`}>
-      <h1 className="text-primary text-center">Tateti</h1>
+      <div className="header">
+        <h1 className="title">Tateti</h1>
+        <Menu onLevelChange={(newLevel) => setLevel(newLevel)} />
+      </div>
       <p className="text-center fw-bold">{status}</p>
       <Board
         squares={squares}
@@ -89,7 +84,8 @@ const Game: React.FC = () => {
           Reiniciar Juego
         </button>
       </div>
-    </div>
+      <p className="text-center mt-3">Nivel actual: {level}</p> {/* Mostrar nivel actual */}
+      </div>
   );
 };
 
