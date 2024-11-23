@@ -6,28 +6,44 @@
   border: none;
   cursor: pointer;
   color: $primary;
-  top: 10px;
-  left: 10px;
+  text-align: left; // Alinea el botón al inicio
+  padding: 10px;
 }
 
-.menu {
+.menu {  
   position: absolute;
-  top: 50px;
-  left: 10px;
+  top: 108px;
+  left: 0;
+  width: 100%;
   background: #ffffff;
   border: 1px solid $secondary;
-  border-radius: 5px;
+  border-radius: 0;
   list-style: none;
-  padding: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 0;
+  opacity: 0; // Comienza invisible
+  transform: translateY(-10px); // Mueve el menú hacia arriba inicialmente
+  transition: opacity 1s ease, transform 1s ease; // Añade una transición suave
 
   li {
-    padding: 10px;
+    padding: 15px;
     cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s, color 0.3s;
 
     &:hover {
       background: $primary;
       color: #ffffff;
     }
   }
+}
+
+.menu-container.open .menu {
+  opacity: 1; // Visible cuando está abierto
+  transform: translateY(0); // Coloca el menú en su posición original
+}
+
+.menu-container.closing .menu {
+  opacity: 0; // Desaparece suavemente
+  transform: translateY(-10px); // Mueve el menú hacia arriba
 }
