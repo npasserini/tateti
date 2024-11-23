@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import Board from './Board';
 import Menu from './Menu';
 
+import { getComputerMove } from '../bot';
+import type { Level } from '../bot';
+
 import '../styles/components/Game.scss';
 
 const calculateWinner = (squares: (string | null)[]) => {
@@ -27,9 +30,18 @@ const Game: React.FC = () => {
   const [squares, setSquares] = useState<(string | null)[]>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
   const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
-  const [level, setLevel] = useState<string>('Fácil'); // Nivel inicial
+  const [level, setLevel] = useState<Level>('Fácil'); // Nivel inicial
 
   const { winner, line } = calculateWinner(squares);
+
+
+  const handleComputerMove = (squares: (string | null)[]) => {
+    const move = getComputerMove(squares, level);
+    if (move !== null) {
+      squares[move] = 'O';
+      setLastMoveIndex(move);
+    }
+  };
 
   const handleClick = (index: number) => {
     if (squares[index] || calculateWinner(squares).winner) return;
@@ -44,14 +56,7 @@ const Game: React.FC = () => {
   
     // Deja que la computadora juegue
     setTimeout(() => {
-      const emptyIndices = newSquares
-        .map((sq, idx) => (sq === null ? idx : null))
-        .filter((idx) => idx !== null) as number[];
-  
-      const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
-      newSquares[move] = 'O';
-      setLastMoveIndex(move); // Marca la jugada de la computadora
-      setSquares([...newSquares]);
+      handleComputerMove(newSquares)
     }, 500);
   };
   
