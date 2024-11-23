@@ -24,6 +24,7 @@ const calculateWinner = (squares: (string | null)[]) => {
 const Game: React.FC = () => {
   const [squares, setSquares] = useState<(string | null)[]>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
+  const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
 
   const { winner, line } = calculateWinner(squares);
 
@@ -39,21 +40,27 @@ const Game: React.FC = () => {
   };
   
   const handleClick = (index: number) => {
-    if (squares[index]) return; // La casilla ya está ocupada
+    if (squares[index] || calculateWinner(squares).winner) return;
   
     const newSquares = squares.slice();
-    newSquares[index] = 'X'; // El jugador juega como 'X'
-  
-    const result = calculateWinner(newSquares); // Verifica el ganador después del movimiento
+    newSquares[index] = 'X';
+    setLastMoveIndex(index); // Marca la jugada del jugador
     setSquares(newSquares);
   
-    if (result.winner) return; // Si hay un ganador, detén el juego
+    const result = calculateWinner(newSquares);
+    if (result.winner) return;
   
-    // Si no hay ganador, deja que la computadora juegue
+    // Deja que la computadora juegue
     setTimeout(() => {
-      handleComputerMove(newSquares);
+      const emptyIndices = newSquares
+        .map((sq, idx) => (sq === null ? idx : null))
+        .filter((idx) => idx !== null) as number[];
+  
+      const move = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      newSquares[move] = 'O';
+      setLastMoveIndex(move); // Marca la jugada de la computadora
       setSquares([...newSquares]);
-    }, 500); // Retraso para simular el "pensamiento" de la computadora
+    }, 500);
   };
   
   const resetGame = () => {
@@ -71,7 +78,12 @@ const Game: React.FC = () => {
     <div className={`game container`}>
       <h1 className="text-primary text-center">Tateti</h1>
       <p className="text-center fw-bold">{status}</p>
-      <Board squares={squares} onClick={handleClick} winningSquares={line} /> {/* Corregido */}
+      <Board
+        squares={squares}
+        onClick={handleClick}
+        winningSquares={line}
+        lastMoveIndex={lastMoveIndex} // Pasar la propiedad requerida
+      />
       <div className="text-center">
         <button className="btn btn-danger mt-3" onClick={resetGame}>
           Reiniciar Juego

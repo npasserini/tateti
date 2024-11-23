@@ -1,14 +1,14 @@
 import React from 'react';
-import '../styles/components/Board.scss';
 import Square from './Square';
 
 interface BoardProps {
   squares: (string | null)[];
   onClick: (index: number) => void;
   winningSquares: number[];
+  lastMoveIndex: number | null;
 }
 
-const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares }) => {
+const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares, lastMoveIndex }) => {
   return (
     <div className="board">
       {squares.map((square, index) => (
@@ -17,6 +17,7 @@ const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares }) => {
           value={square}
           onClick={() => onClick(index)}
           isWinningSquare={winningSquares.includes(index)}
+          isLastMove={lastMoveIndex === index}
         />
       ))}
     </div>

@@ -1,7 +1,4 @@
-// src/styles/components/Square.scss
-
 @import '../_variables';
-@import '../_mixins';
 
 .square {
   width: 100%;
@@ -12,20 +9,37 @@
   align-items: center;
   background-color: #ffffff;
   border: 2px solid $secondary;
-  @include rounded(8px);
-  @include transition;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.2s;
 
-  &:hover {
-    background-color: $primary;
-    color: #ffffff;
+  &.player-x {
+    color: $primary;
+    background-color: lighten($primary, 40%);
   }
 
-  &:active {
-    transform: scale(0.95);
+  &.player-o {
+    color: $danger;
+    background-color: lighten($danger, 40%);
+  }
+
+  &.highlight {
+    filter: brightness(0.8); // Oscurece la última jugada
+    transform: scale(1.05);
   }
 
   &.win {
-    background-color: $primary;
-    color: #ffffff;
+    animation: glow 1s infinite alternate;
+    filter: brightness(1.3); // Incrementa el brillo en un 30%
+    box-shadow: 0 0 10px currentColor;
+  }
+
+
+  @keyframes glow {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.1);
+    }
   }
 }
