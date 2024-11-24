@@ -51,7 +51,7 @@ export const getMLMove = async (squares: BoardType): Promise<number | null> => {
   const availableMoves = emptyIndices.map((idx) => ({ idx, prob: probabilities[idx!] }));
   const bestMove = availableMoves.sort((a, b) => b.prob - a.prob)[0];
 
-  console.log(logProbabilities(probabilities));
+  logProbabilities(probabilities);
 
   return bestMove.idx!;
 };
