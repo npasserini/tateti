@@ -18,7 +18,10 @@ const Game: React.FC = () => {
   const handleComputerMove = async (squares: Squares, player: Player) => {
     const move = await getComputerMove(squares, level)
     if (move !== null) {
-      makeMove(move, squares, player)
+      const newGameState = makeMove(move, squares, player)
+      const newBoard = newGameState!.newBoard
+
+      if (newBoard.gameState !== 'ongoing') handleEndGame(newBoard, lastMoveIndex!, level)
       setLastMoveIndex(move)
     }
   }
@@ -35,7 +38,7 @@ const Game: React.FC = () => {
         handleComputerMove(newBoard.squares, nextPlayer)
       }, 250)
     } else {
-      handleEndGame(newBoard, lastMoveIndex!)
+      handleEndGame(newBoard, lastMoveIndex!, level)
     }
   }
 

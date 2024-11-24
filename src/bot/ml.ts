@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs'
 import { getEmptyIndices } from './util'
 import { BoardType } from '../game'
-import { logProbabilities } from '../util'
+import logProbabilities from '../util/logProbabilities'
 
 let model: tf.LayersModel | null = null
 
