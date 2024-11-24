@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useTicTacToe } from '../game/useTicTacToe';
 import Board from './Board';
 import Menu from './Menu';
-import { getComputerMove, handleEndGame, initializeBot, Level, trainBot } from '../bot';
-import { BoardState, Squares } from '../game/board';
+import { getComputerMove, handleEndGame, initializeBot, Level } from '../bot';
+import { Squares } from '../game/board';
 import { Player } from '../game';
 
 const Game: React.FC = () => {
