@@ -1,9 +1,9 @@
-import React from 'react';
-import './styles/index.scss';
-import Game from './components/Game';
+import React from 'react'
+import './styles/index.scss'
+import Game from './components/Game'
 
 const App: React.FC = () => {
-  return <Game />;
-};
+  return <Game />
+}
 
-export default App;
+export default App

@@ -1,11 +1,11 @@
-import React from 'react';
-import Square from './Square';
+import React from 'react'
+import Square from './Square'
 
 interface BoardProps {
-  squares: (string | null)[];
-  onClick: (index: number) => void;
-  winningSquares?: number[];
-  lastMoveIndex: number | null;
+  squares: (string | null)[]
+  onClick: (index: number) => void
+  winningSquares?: number[]
+  lastMoveIndex: number | null
 }
 
 const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares, lastMoveIndex }) => {
@@ -21,7 +21,7 @@ const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares, lastMov
         />
       ))}
     </div>
-  );
-};
+  )
+}
 
-export default Board;
+export default Board

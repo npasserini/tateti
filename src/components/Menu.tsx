@@ -1,43 +1,39 @@
-import React, { useState } from 'react';
-import '../styles/components/Menu.scss';
+import React, { useState } from 'react'
+import '../styles/components/Menu.scss'
 
-import type { Level } from '../bot';
+import type { Level } from '../bot'
 
 interface MenuProps {
-  onLevelChange: (level: Level) => void;
+  onLevelChange: (level: Level) => void
 }
 
 const Menu: React.FC<MenuProps> = ({ onLevelChange }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false); // Estado para manejar la animación de cierre
+  const [isOpen, setIsOpen] = useState(false)
+  const [isClosing, setIsClosing] = useState(false) // Estado para manejar la animación de cierre
 
   const toggleMenu = () => {
     if (isOpen) {
-      setIsClosing(true); // Inicia la animación de cierre
+      setIsClosing(true) // Inicia la animación de cierre
       setTimeout(() => {
-        setIsOpen(false);
-        setIsClosing(false); // Resetea el estado
-      }, 300); // Tiempo de la animación
+        setIsOpen(false)
+        setIsClosing(false) // Resetea el estado
+      }, 300) // Tiempo de la animación
     } else {
-      setIsOpen(true);
+      setIsOpen(true)
     }
-  };
+  }
 
   const handleLevelChange = (level: Level) => {
-    onLevelChange(level);
-    setIsClosing(true); // Inicia la animación de cierre
+    onLevelChange(level)
+    setIsClosing(true) // Inicia la animación de cierre
     setTimeout(() => {
-      setIsOpen(false);
-      setIsClosing(false); // Resetea el estado
-    }, 300); // Tiempo de la animación
-  };
+      setIsOpen(false)
+      setIsClosing(false) // Resetea el estado
+    }, 300) // Tiempo de la animación
+  }
 
   return (
-    <div
-      className={`menu-container ${isOpen ? 'open' : ''} ${
-        isClosing ? 'closing' : ''
-      }`}
-    >
+    <div className={`menu-container ${isOpen ? 'open' : ''} ${isClosing ? 'closing' : ''}`}>
       <button className="hamburger" onClick={toggleMenu}>
         ☰
       </button>
@@ -48,10 +44,10 @@ const Menu: React.FC<MenuProps> = ({ onLevelChange }) => {
           <li onClick={() => handleLevelChange('Difícil')}>Difícil</li>
           <li onClick={() => handleLevelChange('ML1')}>ML</li>
           <li onClick={() => handleLevelChange('ML2')}>ML</li>
-          </ul>
+        </ul>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default Menu;
+export default Menu

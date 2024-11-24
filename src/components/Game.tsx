@@ -1,44 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { useTicTacToe } from '../game/useTicTacToe';
-import Board from './Board';
-import Menu from './Menu';
-import { getComputerMove, handleEndGame, initializeBot, Level } from '../bot';
-import { Squares } from '../game/board';
-import { Player } from '../game';
+import React, { useEffect, useState } from 'react'
+import { useTicTacToe } from '../game/useTicTacToe'
+import Board from './Board'
+import Menu from './Menu'
+import { getComputerMove, handleEndGame, initializeBot, Level } from '../bot'
+import { Squares } from '../game/board'
+import { Player } from '../game'
 
 const Game: React.FC = () => {
-  const { board, currentPlayer, makeMove, resetGame } = useTicTacToe();
-  const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
-  const [level, setLevel] = useState<Level>('ML2'); // Nivel inicial
+  const { board, currentPlayer, makeMove, resetGame } = useTicTacToe()
+  const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null) // Índice de la última jugada
+  const [level, setLevel] = useState<Level>('ML2') // Nivel inicial
 
-  useEffect(() => { initializeBot() }, []);
+  useEffect(() => {
+    initializeBot()
+  }, [])
 
   const handleComputerMove = async (squares: Squares, player: Player) => {
-    const move = await getComputerMove(squares, level);
+    const move = await getComputerMove(squares, level)
     if (move !== null) {
       makeMove(move, squares, player)
-      setLastMoveIndex(move);
+      setLastMoveIndex(move)
     }
-  };
+  }
 
   const handleClick = (move: number) => {
     const newGameState = makeMove(move, squares, currentPlayer)
-    if (!newGameState) return;
-    
-    setLastMoveIndex(move);
+    if (!newGameState) return
+
+    setLastMoveIndex(move)
     const { newBoard, nextPlayer } = newGameState!
     if (newBoard.gameState === 'ongoing') {
       // Deja que la computadora juegue
       setTimeout(() => {
         handleComputerMove(newBoard.squares, nextPlayer)
-      }, 250);
-    }
-    else {
+      }, 250)
+    } else {
       handleEndGame(newBoard, lastMoveIndex!)
     }
-  };
+  }
 
-  const { squares, winner, gameState, winningLine } = board;
+  const { squares, winner, gameState, winningLine } = board
 
   return (
     <div className={`game container`}>
@@ -60,7 +61,7 @@ const Game: React.FC = () => {
       </div>
       <p className="text-center mt-3">Nivel actual: {level}</p>
     </div>
-  );
-};
+  )
+}
 
-export default Game;
+export default Game

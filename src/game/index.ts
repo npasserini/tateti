@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from 'react'
 export type BoardType = (string | null)[]
 
 export const lines = [
@@ -10,7 +10,7 @@ export const lines = [
   [2, 5, 8],
   [0, 4, 8],
   [2, 4, 6],
-];
+]
 
 // export const calculateWinner = (squares: (string | null)[]) => {
 //   for (let [a, b, c] of lines) {
@@ -21,54 +21,53 @@ export const lines = [
 //   return { winner: null, line: [] }; // No hay ganador
 // };
 
-
-export type Player = 'X' | 'O';
-export type GameState = 'ongoing' | 'won' | 'draw';
+export type Player = 'X' | 'O'
+export type GameState = 'ongoing' | 'won' | 'draw'
 
 export const useTicTacToe = () => {
-  const [board, setBoard] = useState<(Player | null)[]>(Array(9).fill(null));
-  const [currentPlayer, setCurrentPlayer] = useState<Player>('X');
-  const [winner, setWinner] = useState<Player | null>(null);
-  const [gameState, setGameState] = useState<GameState>('ongoing');
+  const [board, setBoard] = useState<(Player | null)[]>(Array(9).fill(null))
+  const [currentPlayer, setCurrentPlayer] = useState<Player>('X')
+  const [winner, setWinner] = useState<Player | null>(null)
+  const [gameState, setGameState] = useState<GameState>('ongoing')
 
   const makeMove = (index: number): boolean => {
     if (gameState !== 'ongoing' || board[index] !== null) {
-      return false; // Movimiento inválido
+      return false // Movimiento inválido
     }
 
-    const newBoard = [...board];
-    newBoard[index] = currentPlayer;
-    setBoard(newBoard);
+    const newBoard = [...board]
+    newBoard[index] = currentPlayer
+    setBoard(newBoard)
 
-    const newWinner = checkWinner(newBoard);
+    const newWinner = checkWinner(newBoard)
     if (newWinner) {
-      setGameState('won');
-      setWinner(newWinner);
-    } else if (newBoard.every((cell) => cell !== null)) {
-      setGameState('draw');
+      setGameState('won')
+      setWinner(newWinner)
+    } else if (newBoard.every(cell => cell !== null)) {
+      setGameState('draw')
     } else {
-      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X');
+      setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
     }
 
-    return true;
-  };
+    return true
+  }
 
   const resetGame = () => {
-    setBoard(Array(9).fill(null));
-    setCurrentPlayer('X');
-    setWinner(null);
-    setGameState('ongoing');
-  };
+    setBoard(Array(9).fill(null))
+    setCurrentPlayer('X')
+    setWinner(null)
+    setGameState('ongoing')
+  }
 
   const checkWinner = (board: (Player | null)[]): Player | null => {
     for (let [a, b, c] of lines) {
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        return board[a];
+        return board[a]
       }
     }
 
-    return null;
-  };
+    return null
+  }
 
   return {
     board,
@@ -77,6 +76,6 @@ export const useTicTacToe = () => {
     gameState,
     makeMove,
     resetGame,
-    checkWinner
-  };
-};
+    checkWinner,
+  }
+}
