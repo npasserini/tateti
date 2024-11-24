@@ -46,7 +46,8 @@ const Menu: React.FC<MenuProps> = ({ onLevelChange }) => {
           <li onClick={() => handleLevelChange('Fácil')}>Fácil</li>
           <li onClick={() => handleLevelChange('Intermedio')}>Intermedio</li>
           <li onClick={() => handleLevelChange('Difícil')}>Difícil</li>
-          <li onClick={() => handleLevelChange('ML')}>ML</li>
+          <li onClick={() => handleLevelChange('ML1')}>ML</li>
+          <li onClick={() => handleLevelChange('ML2')}>ML</li>
           </ul>
       )}
     </div>

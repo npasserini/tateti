@@ -9,7 +9,7 @@ import { Player } from '../game';
 const Game: React.FC = () => {
   const { board, currentPlayer, makeMove, resetGame } = useTicTacToe();
   const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
-  const [level, setLevel] = useState<Level>('ML'); // Nivel inicial
+  const [level, setLevel] = useState<Level>('ML2'); // Nivel inicial
 
   useEffect(() => { initializeBot() }, []);
 
