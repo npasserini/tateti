@@ -4,7 +4,7 @@ import '../styles/components/Square.scss';
 interface SquareProps {
   value: string | null;
   onClick: () => void;
-  isWinningSquare: boolean;
+  isWinningSquare?: boolean;
   isLastMove: boolean; // Indica si es la última jugada
 }
 

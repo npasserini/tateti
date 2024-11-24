@@ -4,7 +4,7 @@ import Square from './Square';
 interface BoardProps {
   squares: (string | null)[];
   onClick: (index: number) => void;
-  winningSquares: number[];
+  winningSquares?: number[];
   lastMoveIndex: number | null;
 }
 
@@ -16,7 +16,7 @@ const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares, lastMov
           key={index}
           value={square}
           onClick={() => onClick(index)}
-          isWinningSquare={winningSquares.includes(index)}
+          isWinningSquare={winningSquares?.includes(index)}
           isLastMove={lastMoveIndex === index}
         />
       ))}

@@ -1,96 +1,84 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useTicTacToe } from '../game/useTicTacToe';
 import Board from './Board';
 import Menu from './Menu';
-
-import { getComputerMove } from '../bot';
-import type { Level } from '../bot';
-
-import '../styles/components/Game.scss';
-
-const calculateWinner = (squares: (string | null)[]) => {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let [a, b, c] of lines) {
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return { winner: squares[a], line: [a, b, c] }; // Devuelve el ganador y las casillas
-    }
-  }
-  return { winner: null, line: [] }; // No hay ganador
-};
+import { getComputerMove, initializeBot, Level, trainBot } from '../bot';
+import { BoardState, Squares } from '../game/board';
+import { Player } from '../game';
 
 const Game: React.FC = () => {
-  const [squares, setSquares] = useState<(string | null)[]>(Array(9).fill(null));
-  const [isXNext, setIsXNext] = useState(true);
+  const { board, currentPlayer, makeMove, resetGame } = useTicTacToe();
   const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null); // Índice de la última jugada
   const [level, setLevel] = useState<Level>('Fácil'); // Nivel inicial
 
-  const { winner, line } = calculateWinner(squares);
+  useEffect(() => { initializeBot() }, []);
 
+  const [trainingData, setTrainingData] = useState<number[][]>([]);
+  const [targetData, setTargetData] = useState<number[][]>([]);
 
-  const handleComputerMove = (squares: (string | null)[]) => {
-    const move = getComputerMove(squares, level);
+  const handleEndGame = ({ gameState, winner }: BoardState) => {
+    if (gameState !== 'ongoing') {
+      const reward = winner === 'X' ? -1 : winner === 'O' ? 1 : 0; // Recompensa basada en el resultado
+      const targets = squares.map((sq, idx) => (idx === lastMoveIndex ? reward : 0));
+
+      setTrainingData([...trainingData, squares.map((sq) => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0))]);
+      setTargetData([...targetData, targets]);
+
+      if (level === 'ML') {
+        trainBot(trainingData, targetData);
+      }
+    }
+  };
+
+  const handleComputerMove = async (squares: Squares, player: Player) => {
+    console.log("handle computer move", squares)
+    const move = await getComputerMove(squares, level);
     if (move !== null) {
-      squares[move] = 'O';
+      makeMove(move, squares, player)
       setLastMoveIndex(move);
     }
   };
 
-  const handleClick = (index: number) => {
-    if (squares[index] || calculateWinner(squares).winner) return;
-  
-    const newSquares = squares.slice();
-    newSquares[index] = 'X';
-    setLastMoveIndex(index); // Marca la jugada del jugador
-    setSquares(newSquares);
-  
-    const result = calculateWinner(newSquares);
-    if (result.winner) return;
-  
-    // Deja que la computadora juegue
-    setTimeout(() => {
-      handleComputerMove(newSquares)
-    }, 500);
-  };
-  
-  const resetGame = () => {
-    setSquares(Array(9).fill(null));
-    setIsXNext(true);
+  const handleClick = (move: number) => {
+    const newGameState = makeMove(move, squares, currentPlayer)
+    console.log("handle click", newGameState?.newBoard.squares);
+    if (!newGameState) return;
+    
+    setLastMoveIndex(move);
+    const { newBoard, nextPlayer } = newGameState!
+    if (newBoard.gameState === 'ongoing') {
+      // Deja que la computadora juegue
+      setTimeout(() => {
+        handleComputerMove(newBoard.squares, nextPlayer)
+      }, 500);
+    }
+    else {
+      handleEndGame(newBoard)
+    }
   };
 
-  const status = winner
-    ? `Ganador: ${winner}`
-    : squares.every((sq) => sq)
-    ? `Empate`
-    : `Turno: ${isXNext ? 'X' : 'O'}`;
+  const { squares, winner, gameState, winningLine } = board;
 
   return (
     <div className={`game container`}>
       <div className="header">
         <h1 className="title">Tateti</h1>
-        <Menu onLevelChange={(newLevel) => setLevel(newLevel)} />
+        <Menu onLevelChange={setLevel} />
       </div>
-      <p className="text-center fw-bold">{status}</p>
+      <p>Turno del jugador: {currentPlayer}</p>
+      {gameState === 'won' && <p>¡El ganador es {winner}!</p>}
+      {gameState === 'draw' && <p>Empate.</p>}
       <Board
         squares={squares}
         onClick={handleClick}
-        winningSquares={line}
+        winningSquares={winningLine}
         lastMoveIndex={lastMoveIndex} // Pasar la propiedad requerida
       />
       <div className="text-center">
-        <button className="btn btn-danger mt-3" onClick={resetGame}>
-          Reiniciar Juego
-        </button>
+        <button onClick={resetGame}>Reiniciar Juego</button>
       </div>
-      <p className="text-center mt-3">Nivel actual: {level}</p> {/* Mostrar nivel actual */}
-      </div>
+      <p className="text-center mt-3">Nivel actual: {level}</p>
+    </div>
   );
 };
 
