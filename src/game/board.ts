@@ -50,7 +50,6 @@ const computeBoardState = (squares: Squares): BoardState => {
       { squares, gameState: 'draw' }
       : { squares, gameState: 'ongoing' };
   
-  console.log(newBoard)
   return newBoard as BoardState
 }
 
@@ -71,7 +70,6 @@ export const useBoard = () => {
   };
 
   const setBoardState = (squares: Squares) => {
-    console.log(squares)
     setSquares(squares)
     const newBoard = computeBoardState(squares)
     if (newBoard.gameState !== 'ongoing')

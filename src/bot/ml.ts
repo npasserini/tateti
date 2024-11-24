@@ -14,7 +14,10 @@ const createModel = (): tf.LayersModel => {
   newModel.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [9] }));
   newModel.add(tf.layers.dense({ units: 128, activation: 'relu' }));
   newModel.add(tf.layers.dense({ units: 9, activation: 'softmax' }));
-  newModel.compile({ optimizer: 'adam', loss: 'meanSquaredError' });
+  newModel.compile({ 
+    optimizer: tf.train.adam(0.01),
+    loss: 'meanSquaredError'
+  });
   return newModel;
 };
 
@@ -46,6 +49,8 @@ export const getMLMove = async (squares: BoardType): Promise<number | null> => {
   // Seleccionar la celda con mayor probabilidad disponible
   const availableMoves = emptyIndices.map((idx) => ({ idx, prob: probabilities[idx!] }));
   const bestMove = availableMoves.sort((a, b) => b.prob - a.prob)[0];
+
+  console.log(probabilities)
 
   return bestMove.idx!;
 };

@@ -17,21 +17,22 @@ const Game: React.FC = () => {
   const [targetData, setTargetData] = useState<number[][]>([]);
 
   const handleEndGame = ({ gameState, winner }: BoardState) => {
-    if (gameState !== 'ongoing') {
-      const reward = winner === 'X' ? -1 : winner === 'O' ? 1 : 0; // Recompensa basada en el resultado
-      const targets = squares.map((sq, idx) => (idx === lastMoveIndex ? reward : 0));
+    const reward = winner === 'X' ? -1 : winner === 'O' ? 1 : 0; // Recompensa basada en el resultado
+    const training = squares.map((sq) => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0));
+    const targets = squares.map((sq, idx) => (idx === lastMoveIndex ? reward : 0));
 
-      setTrainingData([...trainingData, squares.map((sq) => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0))]);
-      setTargetData([...targetData, targets]);
+    console.log(training);
+    console.log(targets);
+    
+    setTrainingData([...trainingData, training]);
+    setTargetData([...targetData, targets]);
 
-      if (level === 'ML') {
-        trainBot(trainingData, targetData);
-      }
+    if (level === 'ML') {
+      setTimeout(() => trainBot(trainingData, targetData), 0);
     }
   };
 
   const handleComputerMove = async (squares: Squares, player: Player) => {
-    console.log("handle computer move", squares)
     const move = await getComputerMove(squares, level);
     if (move !== null) {
       makeMove(move, squares, player)
@@ -41,7 +42,6 @@ const Game: React.FC = () => {
 
   const handleClick = (move: number) => {
     const newGameState = makeMove(move, squares, currentPlayer)
-    console.log("handle click", newGameState?.newBoard.squares);
     if (!newGameState) return;
     
     setLastMoveIndex(move);
@@ -50,7 +50,7 @@ const Game: React.FC = () => {
       // Deja que la computadora juegue
       setTimeout(() => {
         handleComputerMove(newBoard.squares, nextPlayer)
-      }, 500);
+      }, 250);
     }
     else {
       handleEndGame(newBoard)
