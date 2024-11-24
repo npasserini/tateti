@@ -1,6 +1,7 @@
 import * as tf from '@tensorflow/tfjs';
 import { getEmptyIndices } from './util';
 import { BoardType } from '../game';
+import { formatProbabilities } from '../util';
 
 let model: tf.LayersModel | null = null;
 
@@ -50,7 +51,7 @@ export const getMLMove = async (squares: BoardType): Promise<number | null> => {
   const availableMoves = emptyIndices.map((idx) => ({ idx, prob: probabilities[idx!] }));
   const bestMove = availableMoves.sort((a, b) => b.prob - a.prob)[0];
 
-  console.log(probabilities)
+  console.log(formatProbabilities(probabilities))
 
   return bestMove.idx!;
 };
