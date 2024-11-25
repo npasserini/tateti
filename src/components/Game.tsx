@@ -7,7 +7,7 @@ import { Squares } from '../game/board'
 import { Player } from '../game'
 
 const Game: React.FC = () => {
-  const { board, currentPlayer, makeMove, resetGame } = useTicTacToe()
+  const { board, moves, currentPlayer, makeMove, resetGame } = useTicTacToe()
   const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null) // Índice de la última jugada
   const [level, setLevel] = useState<Level>('ML2') // Nivel inicial
 
@@ -21,7 +21,7 @@ const Game: React.FC = () => {
       const newGameState = makeMove(move, squares, player)
       const newBoard = newGameState!.newBoard
 
-      if (newBoard.gameState !== 'ongoing') handleEndGame(newBoard, lastMoveIndex!, level)
+      if (newBoard.gameState !== 'ongoing') handleEndGame(newBoard, moves, level)
       setLastMoveIndex(move)
     }
   }
@@ -38,7 +38,7 @@ const Game: React.FC = () => {
         handleComputerMove(newBoard.squares, nextPlayer)
       }, 250)
     } else {
-      handleEndGame(newBoard, lastMoveIndex!, level)
+      handleEndGame(newBoard, moves, level)
     }
   }
 

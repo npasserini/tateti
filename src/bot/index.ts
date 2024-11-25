@@ -4,6 +4,7 @@ import { getHardMove } from './hard'
 import { getMLMove, initializeModel, trainModel } from './ml'
 import { BoardState } from '../game/board'
 import logRewards from '../util/logRewards'
+import { Move } from '../game/useTicTacToe'
 
 export type Level = 'Fácil' | 'Intermedio' | 'Difícil' | 'ML1' | 'ML2'
 
@@ -16,32 +17,40 @@ export const getComputerMove = async (squares: (string | null)[], level: Level):
   return null
 }
 
-const trainingData: number[][] = []
-const targetData: number[][] = []
-
 export const initializeBot = async (): Promise<void> => {
   await initializeModel()
 }
 
 // Asume que el último en jugar fue el humano, la computadora empató o perdió.
-export const handleEndGame = (board: BoardState, secondToLastMove: number, level: Level) => {
+export const handleEndGame = (board: BoardState, moves: Move[], level: Level) => {
   if (!level.startsWith('ML')) return
 
   // const sublevel = Number(level[2])
-  rewardLastComputerMove(board, [secondToLastMove, -1])
-
-  setTimeout(() => trainModel(trainingData, targetData), 0)
+  rewardLastComputerMove(moves)
 }
 
-const rewardLastComputerMove = ({ squares, winner }: BoardState, moves: number[]) => {
-  const reward = winner === 'X' ? -1 : winner === 'O' ? 1 : 0 // Recompensa basada en la última jugada propia
-  const lastComputerMove = moves[moves.length - (winner === 'O' ? 1 : 2)]
+const rewardLastComputerMove = (moves: Move[]) => {
+  // Asume 'O' = bot / 'X' = humano
+  console.log(moves)
+  const { winner } = moves[moves.length - 1].board
 
-  const training = squares.map(sq => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0))
-  const targets = squares.map((sq, idx) => (idx === lastComputerMove ? reward : 0))
+  if (winner === 'X') {
+    // Castigo por perder
+    const squares = moves[moves.length - 2].board.squares
+    const training = squares.map(sq => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0))
 
-  logRewards(squares, targets)
+    const targets = Array(9).fill(0)
 
-  trainingData.push(training)
-  targetData.push(targets)
+    // Penalizar lo que jugó
+    const lastOwnMove = moves[moves.length - 2].lastMove
+    targets[lastOwnMove] = -1
+
+    // Premiar lo que debió haber jugado.
+    const lastOppositeMove = moves[moves.length - 1].lastMove
+    targets[lastOppositeMove] = 1
+
+    logRewards(squares, targets)
+
+    setTimeout(() => trainModel([training], [targets]), 0)
+  }
 }

@@ -1,5 +1,13 @@
 import { useState } from 'react'
-import { Squares, useBoard, type Player } from './board'
+import { BoardState, Squares, useBoard, type Player } from './board'
+
+export type Move = {
+  board: BoardState
+  lastMove: number
+  lastPlayer: Player
+}
+
+var moves: Move[] = []
 
 export const useTicTacToe = () => {
   const { board, setBoardState, resetBoard, isValidMove } = useBoard()
@@ -14,6 +22,13 @@ export const useTicTacToe = () => {
     const newSquares = [...squares]
     newSquares[move] = currentPlayer
     const newBoard = setBoardState(newSquares)
+
+    moves.push({
+      board: newBoard,
+      lastMove: move,
+      lastPlayer: currentPlayer,
+    })
+
     const nextPlayer: Player = currentPlayer === 'X' ? 'O' : 'X'
 
     // Cambiar de turno solo si el juego continúa
@@ -26,12 +41,14 @@ export const useTicTacToe = () => {
 
   // Función para reiniciar el juego
   const resetGame = () => {
+    moves = []
     resetBoard()
     setCurrentPlayer('X')
   }
 
   return {
     board,
+    moves, // Non reactive
     currentPlayer,
     makeMove,
     resetGame,
