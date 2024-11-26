@@ -2,7 +2,7 @@ import { getEasyMove } from './easy'
 import { getMediumMove } from './medium'
 import { getHardMove } from './hard'
 import { getMLMove, initializeModel, trainModel } from './ml'
-import { Board, Squares } from '../game'
+import { Squares } from '../game'
 import logRewards from '../util/logRewards'
 import { Move } from '../game'
 
@@ -22,7 +22,7 @@ export const initializeBot = async (): Promise<void> => {
 }
 
 // Asume que el último en jugar fue el humano, la computadora perdió.
-export const handleEndGame = (board: Board, moves: Move[], level: Level) => {
+export const handleEndGame = (moves: Move[], level: Level) => {
   if (!level.startsWith('ML')) return
 
   const trainingData: number[][] = []

@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 export type Player = 'X' | 'O'
 export type GameState = 'ongoing' | 'won' | 'draw'
 export type Squares = (Player | null)[]
@@ -19,21 +17,21 @@ export const lines = [
 export class Board {
   squares: Squares
   winner?: Player
-  gameState: GameState
+  gameOutcome: GameState
   winningLine?: number[]
 
-  constructor(squares: Squares) {
+  constructor(squares: Squares = Array(9).fill(null)) {
     this.squares = [...squares] // Crear una copia inmutable
     const { winner, winningLine, isDraw } = Board.checkWinner(squares)
 
     if (winner) {
       this.winner = winner
-      this.gameState = 'won'
+      this.gameOutcome = 'won'
       this.winningLine = winningLine
     } else if (isDraw) {
-      this.gameState = 'draw'
+      this.gameOutcome = 'draw'
     } else {
-      this.gameState = 'ongoing'
+      this.gameOutcome = 'ongoing'
     }
   }
 
@@ -55,7 +53,7 @@ export class Board {
 
   // Validar si una jugada es válida
   isValidMove(index: number): boolean {
-    return this.gameState === 'ongoing' && this.squares[index] === null
+    return this.gameOutcome === 'ongoing' && this.squares[index] === null
   }
 
   // Realizar una jugada
@@ -72,21 +70,6 @@ export class Board {
 
   // Reiniciar el tablero
   reset(): Board {
-    return new Board(Array(9).fill(null))
-  }
-}
-
-// Hook para manejar el estado del tablero
-export const useBoard = () => {
-  const [board, setBoard] = useState(() => new Board(Array(9).fill(null)))
-
-  const resetBoard = () => {
-    setBoard(() => new Board(Array(9).fill(null)))
-  }
-
-  return {
-    board,
-    setBoard,
-    resetBoard,
+    return new Board()
   }
 }

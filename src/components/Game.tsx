@@ -1,49 +1,50 @@
 import React, { useEffect, useState } from 'react'
-import { useTicTacToe } from '../game/useTicTacToe'
 import BoardView from './Board'
 import Menu from './Menu'
 import { getComputerMove, handleEndGame, initializeBot, Level } from '../bot'
-import { Board, Player, Squares } from '../game'
+import { TicTacToe } from '../game'
 
 const Game: React.FC = () => {
-  const { board, moves, currentPlayer, makeMove, resetGame } = useTicTacToe()
-  const [lastMoveIndex, setLastMoveIndex] = useState<number | null>(null) // Índice de la última jugada
   const [level, setLevel] = useState<Level>('ML2') // Nivel inicial
+  const [gameState, setGameState] = useState(() => new TicTacToe())
 
   useEffect(() => {
     initializeBot()
   }, [])
 
-  const handleComputerMove = async (currentBoard: Board, player: Player) => {
-    console.log('handleComputerMove', currentBoard)
+  const handleComputerMove = async (gameState: TicTacToe) => {
+    const currentBoard = gameState.board
+
     const move = await getComputerMove(currentBoard.squares, level)
     if (move !== null) {
-      const newGameState = makeMove(move, currentBoard, player)
-      const newBoard = newGameState!.newBoard
-      if (newBoard.gameState !== 'ongoing') handleEndGame(newBoard, moves, level)
-      setLastMoveIndex(move)
+      const newGameState = gameState.makeMove(move)!
+      setGameState(newGameState)
+      if (newGameState.board.gameOutcome !== 'ongoing') handleEndGame(newGameState.moves, level)
     }
   }
 
   const handleClick = (move: number) => {
-    const newGameState = makeMove(move, board, currentPlayer)
-    console.log('handleClick', newGameState?.newBoard)
-    if (!newGameState) return
+    const newGameState = gameState.makeMove(move)
 
-    setLastMoveIndex(move)
-    const { newBoard, nextPlayer } = newGameState!
-    console.log('handleClick', newBoard)
-    if (newBoard.gameState === 'ongoing') {
+    if (!newGameState) return
+    setGameState(newGameState)
+
+    if (newGameState.board.gameOutcome === 'ongoing') {
       // Deja que la computadora juegue
       setTimeout(() => {
-        handleComputerMove(newBoard, nextPlayer)
+        handleComputerMove(newGameState)
       }, 250)
     } else {
-      handleEndGame(newBoard, moves, level)
+      handleEndGame(newGameState.moves, level)
     }
   }
 
-  const { squares, winner, gameState, winningLine } = board
+  const resetGame = () => {
+    setGameState(new TicTacToe())
+  }
+
+  const { board, currentPlayer, lastMove } = gameState
+  const { squares, winner, gameOutcome, winningLine } = board
 
   return (
     <div className={`game container`}>
@@ -52,13 +53,13 @@ const Game: React.FC = () => {
         <Menu onLevelChange={setLevel} />
       </div>
       <p>Turno del jugador: {currentPlayer}</p>
-      {gameState === 'won' && <p>¡El ganador es {winner}!</p>}
-      {gameState === 'draw' && <p>Empate.</p>}
+      {gameOutcome === 'won' && <p>¡El ganador es {winner}!</p>}
+      {gameOutcome === 'draw' && <p>Empate.</p>}
       <BoardView
         squares={squares}
         onClick={handleClick}
         winningSquares={winningLine}
-        lastMoveIndex={lastMoveIndex} // Pasar la propiedad requerida
+        lastMoveIndex={lastMove} // Pasar la propiedad requerida
       />
       <div className="text-center">
         <button onClick={resetGame}>Reiniciar Juego</button>

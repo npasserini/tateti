@@ -5,7 +5,7 @@ interface BoardProps {
   squares: (string | null)[]
   onClick: (index: number) => void
   winningSquares?: number[]
-  lastMoveIndex: number | null
+  lastMoveIndex?: number
 }
 
 const Board: React.FC<BoardProps> = ({ squares, onClick, winningSquares, lastMoveIndex }) => {
