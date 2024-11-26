@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { BoardState, Squares, useBoard, type Player } from './board'
+import { Board, Squares, useBoard, type Player } from './board'
 
 export type Move = {
-  board: BoardState
+  board: Board
   lastMove: number
   lastPlayer: Player
 }
@@ -10,18 +10,19 @@ export type Move = {
 var moves: Move[] = []
 
 export const useTicTacToe = () => {
-  const { board, setBoardState, resetBoard, isValidMove } = useBoard()
+  const { board, setBoard, resetBoard } = useBoard()
 
   const [currentPlayer, setCurrentPlayer] = useState<Player>('X')
 
   // Función para realizar un movimiento
-  const makeMove = (move: number, squares: Squares, currentPlayer: Player) => {
+  const makeMove = (move: number, currentBoard: Board, currentPlayer: Player) => {
+    console.log('makeMove', currentBoard)
     // Movimiento inválido, abortar
-    if (!isValidMove(move)) return null
+    if (!board.isValidMove(move)) return null
 
-    const newSquares = [...squares]
-    newSquares[move] = currentPlayer
-    const newBoard = setBoardState(newSquares)
+    const newBoard = currentBoard.makeMove(move, currentPlayer)
+    console.log('newBoard', newBoard)
+    setBoard(newBoard)
 
     moves.push({
       board: newBoard,

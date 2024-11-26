@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs'
 import { getEmptyIndices } from './util'
-import { BoardType } from '../game'
 import logProbabilities from '../util/logProbabilities'
+import { Squares } from '../game'
 
 let model: tf.LayersModel | null = null
 
@@ -36,7 +36,7 @@ export const initializeModel = async (): Promise<void> => {
  * @param boardState Estado del tablero como array de números.
  * @returns Índice del movimiento.
  */
-export const getMLMove = async (squares: BoardType): Promise<number | null> => {
+export const getMLMove = async (squares: Squares): Promise<number | null> => {
   if (!model) {
     throw new Error('El modelo no está inicializado')
   }

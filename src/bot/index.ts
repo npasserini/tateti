@@ -2,13 +2,13 @@ import { getEasyMove } from './easy'
 import { getMediumMove } from './medium'
 import { getHardMove } from './hard'
 import { getMLMove, initializeModel, trainModel } from './ml'
-import { BoardState, Squares } from '../game/board'
+import { Board, Squares } from '../game'
 import logRewards from '../util/logRewards'
-import { Move } from '../game/useTicTacToe'
+import { Move } from '../game'
 
 export type Level = 'Fácil' | 'Intermedio' | 'Difícil' | 'ML1' | 'ML2'
 
-export const getComputerMove = async (squares: (string | null)[], level: Level): Promise<number | null> => {
+export const getComputerMove = async (squares: Squares, level: Level): Promise<number | null> => {
   if (level === 'Fácil') return getEasyMove(squares)
   if (level === 'Intermedio') return getMediumMove(squares)
   if (level === 'Difícil') return getHardMove(squares)
@@ -22,7 +22,7 @@ export const initializeBot = async (): Promise<void> => {
 }
 
 // Asume que el último en jugar fue el humano, la computadora perdió.
-export const handleEndGame = (board: BoardState, moves: Move[], level: Level) => {
+export const handleEndGame = (board: Board, moves: Move[], level: Level) => {
   if (!level.startsWith('ML')) return
 
   const trainingData: number[][] = []

@@ -1,4 +1,4 @@
-import { Squares } from '../game/board'
+import { Squares } from '../game'
 
 /**
  * Renderiza el tablero de tatetí en la consola con colores según las recompensas.
