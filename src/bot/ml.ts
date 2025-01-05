@@ -2,6 +2,7 @@ import * as tf from '@tensorflow/tfjs'
 import { getEmptyIndices } from './util'
 import logProbabilities from '../util/logProbabilities'
 import { Squares } from '../game'
+import { rewardMove } from '.'
 
 let model: tf.LayersModel | null = null
 
@@ -10,15 +11,36 @@ let model: tf.LayersModel | null = null
  * Entrada: Estado del tablero (9 valores).
  * Salida: Probabilidades para cada celda.
  */
-const createModel = (): tf.LayersModel => {
+const createModel1 = (): tf.LayersModel => {
   const newModel = tf.sequential()
   newModel.add(tf.layers.dense({ units: 128, activation: 'relu', inputShape: [9] }))
   newModel.add(tf.layers.dense({ units: 128, activation: 'relu' }))
   newModel.add(tf.layers.dense({ units: 9, activation: 'softmax' }))
   newModel.compile({
-    optimizer: tf.train.adam(0.01),
+    optimizer: 'adam', // tf.train.adam(0.01),
     loss: 'meanSquaredError',
   })
+  return newModel
+}
+
+const createModel2 = (): tf.LayersModel => {
+  const newModel = tf.sequential()
+
+  // Capa para procesar cada fila, columna y diagonal como características separadas
+  newModel.add(tf.layers.dense({ units: 36, activation: 'relu', inputShape: [9] }))
+  // 36 unidades porque hay 3 filas + 3 columnas + 2 diagonales y cada una tiene 3 celdas.
+
+  // Capa intermedia con interacciones entre regiones
+  newModel.add(tf.layers.dense({ units: 128, activation: 'relu' }))
+
+  // Salida final
+  newModel.add(tf.layers.dense({ units: 9, activation: 'softmax' }))
+
+  newModel.compile({
+    optimizer: 'adam',
+    loss: 'meanSquaredError',
+  })
+
   return newModel
 }
 
@@ -27,7 +49,7 @@ const createModel = (): tf.LayersModel => {
  */
 export const initializeModel = async (): Promise<void> => {
   if (!model) {
-    model = createModel()
+    model = createModel2()
   }
 }
 
@@ -45,15 +67,26 @@ export const getMLMove = async (squares: Squares): Promise<number | null> => {
   const inputTensor = tf.tensor2d([boardState])
   const prediction = model.predict(inputTensor) as tf.Tensor
   const probabilities = prediction.dataSync() // Probabilidades para cada celda
-  const emptyIndices = getEmptyIndices(squares)
-
-  // Seleccionar la celda con mayor probabilidad disponible
-  const availableMoves = emptyIndices.map(idx => ({ idx, prob: probabilities[idx!] }))
-  const bestMove = availableMoves.sort((a, b) => b.prob - a.prob)[0]
-
   logProbabilities(probabilities)
 
-  return bestMove.idx!
+  const emptyIndices = getEmptyIndices(squares)
+  const bestMoves = Array.from(probabilities)
+    .map((prob, idx) => ({ idx, prob }))
+    .sort((a, b) => b.prob - a.prob)
+
+  for (const { idx } of bestMoves) {
+    console.log(idx, emptyIndices)
+    if (emptyIndices.includes(idx)) return idx
+    else rewardMove(squares, null, idx, 2)
+  }
+
+  // Seleccionar la celda con mayor probabilidad disponible
+  // const availableMoves = emptyIndices.map(idx => ({ idx, prob: probabilities[idx!] }))
+  // const bestMove = availableMoves.sort((a, b) => b.prob - a.prob)[0]
+
+  // return bestMove.idx!
+
+  throw new Error('Should not happen')
 }
 
 /**

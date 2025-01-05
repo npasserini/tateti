@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import BoardView from './Board'
 import Menu from './Menu'
-import { getComputerMove, handleEndGame, initializeBot, Level } from '../bot'
+import { getComputerMove, handleEndGame, initializeBot, Level, resetTrainingData } from '../bot'
 import { TicTacToe } from '../game'
 
 const Game: React.FC = () => {
@@ -19,7 +19,7 @@ const Game: React.FC = () => {
     if (move !== null) {
       const newGameState = gameState.makeMove(move)!
       setGameState(newGameState)
-      if (newGameState.board.gameOutcome !== 'ongoing') handleEndGame(newGameState.moves, level)
+      if (newGameState.board.gameOutcome !== 'ongoing') handleEndGame(newGameState, level)
     }
   }
 
@@ -35,11 +35,12 @@ const Game: React.FC = () => {
         handleComputerMove(newGameState)
       }, 250)
     } else {
-      handleEndGame(newGameState.moves, level)
+      handleEndGame(newGameState, level)
     }
   }
 
   const resetGame = () => {
+    resetTrainingData()
     setGameState(new TicTacToe())
   }
 

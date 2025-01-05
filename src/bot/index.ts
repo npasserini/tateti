@@ -2,9 +2,8 @@ import { getEasyMove } from './easy'
 import { getMediumMove } from './medium'
 import { getHardMove } from './hard'
 import { getMLMove, initializeModel, trainModel } from './ml'
-import { Squares } from '../game'
+import { Squares, TicTacToe } from '../game'
 import logRewards from '../util/logRewards'
-import { Move } from '../game'
 
 export type Level = 'Fácil' | 'Intermedio' | 'Difícil' | 'ML1' | 'ML2'
 
@@ -21,27 +20,37 @@ export const initializeBot = async (): Promise<void> => {
   await initializeModel()
 }
 
-// Asume que el último en jugar fue el humano, la computadora perdió.
-export const handleEndGame = (moves: Move[], level: Level) => {
-  if (!level.startsWith('ML')) return
+var trainingData: number[][] = []
+var targetData: number[][] = []
 
-  const trainingData: number[][] = []
-  const targetData: number[][] = []
+export const resetTrainingData = () => {
+  trainingData = []
+  targetData = []
+}
+
+// Asume que que la computardora = O / oponente = X
+export const handleEndGame = (gameState: TicTacToe, level: Level) => {
+  const { moves } = gameState
+
+  if (
+    !level.startsWith('ML') ||
+    gameState.board.gameOutcome === 'draw' // Por ahora no aprendemos de los empates
+  )
+    return
 
   // const sublevel = Number(level[2])
 
-  var reward = 1
+  var reward = 1 // Siempre se premia al ganador, no importa si fue la IA o no.
+
   for (var index = moves.length - 1; index > 0; index -= 2) {
     // moves[index] tiene la última jugada del contrario (que gana)
-    const oppositeMove = moves[index].lastMove
+    const winnerMove = moves[index].lastMove
 
     // moves[index - 1] tiene la última jugada propia (perdedora)
     const squares = moves[index - 1].board.squares
-    const ownMove = moves[index - 1].lastMove
+    const loserMove = moves[index - 1].lastMove
 
-    const { training, targets } = punishMove(squares, ownMove, oppositeMove, reward)
-    trainingData.push(training)
-    targetData.push(targets)
+    rewardMove(squares, winnerMove, loserMove, reward)
 
     // La última jugada se penaliza al máximo, cada jugada se reduce un 50% la penalidad
     reward /= 2
@@ -50,18 +59,15 @@ export const handleEndGame = (moves: Move[], level: Level) => {
   setTimeout(() => trainModel(trainingData, targetData), 0)
 }
 
-const punishMove = (squares: Squares, ownMove: number, oppositeMove: number, reward: number) => {
+export const rewardMove = (squares: Squares, winnerMove: number | null, loserMove: number, reward: number) => {
   const training = squares.map(sq => (sq === 'X' ? 1 : sq === 'O' ? -1 : 0))
 
   const targets = Array(9).fill(0)
-
-  // Penalizar lo que jugó
-  targets[ownMove] = -reward
-
-  // Premiar lo que debió haber jugado.
-  targets[oppositeMove] = reward
+  if (winnerMove) targets[winnerMove] = reward // Premiar la jugada ganadora
+  targets[loserMove] = -reward // Castigar la jugada perdedora
 
   logRewards(squares, targets)
 
-  return { training, targets }
+  trainingData.push(training)
+  targetData.push(targets)
 }
